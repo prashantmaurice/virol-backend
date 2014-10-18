@@ -1,0 +1,66 @@
+{
+    "remindmeServer" : {
+        "port" : "9000"
+    },
+    "dbConfig" : {
+        "username" : "user",
+        "password" : "remindme123",
+        "database": "remindme"
+    },
+    "newDbConfig" : {
+        "host" : "localhost",
+        "port" : 3306,
+        "maxConcurrentQueries": 100,
+        "dialect": "mysql",
+        "logging": false,
+        "pool": {
+            "maxConnections": 25,
+            "maxIdleTime": 30
+        }   
+    },
+    "log4jConfig": {
+        "auditLogAppender": {
+            "category": "audit",
+            "filename": "/var/log/preburn/frontend_server/audit.log",
+            "pattern": "-yyyy-MM-dd",
+            "type": "dateFile"
+        },
+        "cronLogAppender": {
+            "category": "cron",
+            "filename": "/var/log/preburn/frontend_server/nodeCronLogFile.log",
+            "pattern": "-yyyy-MM-dd",
+            "type": "dateFile"
+        },
+        "dbLogAppender": {
+            "category": "database",
+            "filename": "/var/log/preburn/frontend_server/database.log",
+            "pattern": "-yyyy-MM-dd",
+            "type": "dateFile"
+        },
+        "levels": {
+            "app": "DEBUG",
+            "audit": "DEBUG",
+            "cron": "DEBUG",
+            "database": "ERROR"
+        },
+        "serverLogAppander": {
+            "category": "app",
+            "filename": "/var/log/preburn/frontend_server/nodeServerLogFile",
+            "pattern": "-yyyy-MM-dd-hh",
+            "type": "dateFile"
+        },
+        "webServiceLogAppender": {
+            "category": "webServiceLogAppender",
+            "filename": "/var/log/preburn/frontend_server/webServiceLogFile",
+            "layout": {
+                "type": "basicLayout"
+            },
+            "pattern": "-yyyy-MM-dd-hh",
+            "type": "dateFile"
+        },
+        "appendConsoleLog" : true   
+    },
+    "backendServerConfig" : {
+        "url" : "http://remindme.prashantmaurice.in:3000"
+    }
+}

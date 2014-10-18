@@ -1,0 +1,22 @@
+#! /bin/bash
+ENV=_ENV_
+echo "In start"
+#Send Mail
+HOSTNAME=`hostname`
+SUBJECT="Frontend Server Started on $HOSTNAME"
+# Email To ?
+EMAIL[0]="vijay@freecharge.com"
+# Email text/message
+EMAILMESSAGE="email.txt"
+cat /dev/null > $EMAILMESSAGE
+# send an email using /bin/mail
+echo "Server has been started on port 8000. Check if there was any issue. Reported Time `date`" >> $EMAILMESSAGE
+tail -n 15 /var/log/preburn/frontend_server/supervise7000-$(date +"%d-%m-%y").log >> $EMAILMESSAGE
+for i in `seq 0 ${#EMAIL[@]}`;do
+	mail -s "preburn Frontend Server started!!!" "${EMAIL[$i]}" < $EMAILMESSAGE
+done
+
+cd /home/vijay/frontend
+export NODE_ENV=production
+exec node app.js
+

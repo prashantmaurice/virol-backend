@@ -1,0 +1,32 @@
+PACKAGE_PATH=$(pwd)
+NODE_PORT=8000
+PROCESSES=2
+NODE_PORT_START=8000
+PACKAGE_NAME=frontend_server
+
+for i in `seq 1 $PROCESSES`; do
+    export START_NODE=$NODE_PORT_START
+    let temp=$START_NODE+$i-1
+    PORTS[${i}-1]=${temp}
+done
+
+case $1 in 
+	start)
+	    for i in `seq 1 $PROCESSES`; do
+            export NODE_PORT=${PORTS[$i-1]}
+            echo ${NODE_PORT}
+            mkdir -p $PACKAGE_PATH/superviseRun/supervise${NODE_PORT}
+            cp -R $PACKAGE_PATH/superviseRun/superviseNew/* $PACKAGE_PATH/superviseRun/supervise${NODE_PORT}/
+            nohup supervise $PACKAGE_PATH/superviseRun/supervise${NODE_PORT} >> /var/log/preburn/${PACKAGE_NAME}/supervise${NODE_PORT}-$(date +"%d-%m-%y").log 2>> /var/log/preburn/${PACKAGE_NAME}/supervise${NODE_PORT}-$(date +"%d-%m-%y").log &
+        done
+		;;
+	stop)
+		ps -ef | grep -e "supervise $PACKAGE_PATH" -e "node app.js" | awk '{print $2}'|xargs  kill -9
+		;;
+	setup)
+		mkdir -p /var/log/preburn/frontend_server
+		;;
+	*)
+		echo "no such command"
+		;;
+esac
