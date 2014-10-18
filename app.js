@@ -15,6 +15,7 @@ var httpProxy = require('http-proxy');
 
 var app = express();
 var httpServer = require('http').Server(app);
+var io = require('socket.io')(httpServer,{path: '/socket.io'});
 //
 //var backendProxy = httpProxy.createProxy();
 //var backendProxyServer = http.createServer(function(req, res) {
@@ -53,7 +54,7 @@ if ('development' == app.get('env')) {
 
 
 // Define all routes here
-require('./routes')(app);
+require('./routes')(app, io);
 
 httpServer.listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));

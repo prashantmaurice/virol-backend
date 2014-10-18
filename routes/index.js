@@ -8,6 +8,7 @@
 //   res.render('index', { title: 'Preburn' });
 // };
 
-module.exports = function (app) {
-    require('./dashboard.js')(app);
+module.exports = function (app, io) {
+//    require('./dashboard.js')(app);
+    require('./game.js')(app,io);
 };
