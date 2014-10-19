@@ -5,6 +5,7 @@ var users = {};
 function userObject(socket){
     this.socket = socket;
     this.userId = userIdGenerator++;
+    this.opponent = null;
 }
 
 var GameServer = function (app, io) {
