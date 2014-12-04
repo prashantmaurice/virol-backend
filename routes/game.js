@@ -98,13 +98,11 @@ var GameServer = function (app, io) {
 
         //CONNECTED USER COMMANDS
         socket.on('command', function(msg){
-//            if(users[msg.user1].opponent == null) return;
-//            if(users[msg.user2].opponent == null) return;
+            if(users[msg.userId1].opponent == null) return;
+            if(users[msg.userId2].opponent == null) return;
             console.log("CMD:"+JSON.stringify(msg));
-            if(users[msg.user1]!=null)
-                users[msg.user1].socket.emit('command',msg);
-            if(users[msg.user2]!=null)
-                users[msg.user2].socket.emit('command',msg);
+            users[msg.userId1].socket.emit('command',msg);
+            users[msg.userId2].socket.emit('command',msg);
         });
 
     });
