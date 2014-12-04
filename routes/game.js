@@ -6,18 +6,25 @@ function userObject(socket){
     this.socket = socket;
     this.userId = userIdGenerator++;
     this.opponent = null;
+    this.username = "";
 }
-
+function getUsersOnline(){
+    var reply = [];
+    for (var key in users) {
+        reply.push(users[key].userId)
+    }
+    return reply;
+}
 var GameServer = function (app, io) {
     app.get('/', function (req, res) {
         res.end("working");
 
     });
     io.on('connection', function(socket){
-        console.log('a user connected');
+        console.log('a new user connected');
         var user = new userObject(socket);
         users[user.userId]=user;
-        this.mainId = user.userId;
+//        this.mainId = user.userId;
         socket.emit('new connection',{ id : user.userId});
         socket.userId = user.userId;
         this.opponent = null;
@@ -25,17 +32,8 @@ var GameServer = function (app, io) {
 
 
         socket.on('all users', function(){
-            console.log('User requested to connect');
-//            var usernames = [];
-//            for(var i =0;i<users.length;i++){
-//                usernames.push(users[i].userId);
-
-//            }
-            var reply = [];
-            for (var key in users) {
-                reply.push(users[key].userId)
-            }
-            io.emit('all users', reply);
+            console.log('User requested all users details');
+            io.emit('all users', getUsersOnline());
         });
 
         socket.on('connectUser', function(){
