@@ -15,6 +15,14 @@ function getUsersOnline(){
     }
     return reply;
 }
+function printUsers(){
+    var reply = [];
+    for (var key in users) {
+        var user = users[key];
+        reply.push({key:key, userId:user.userId,opponent:user.opponent,socket:((user.socket==null)?0:1)})
+    }
+    return JSON.stringify(reply);
+}
 var GameServer = function (app, io) {
     app.get('/', function (req, res) {
         res.end("working");
@@ -30,15 +38,12 @@ var GameServer = function (app, io) {
         this.opponent = null;
 
 
-
+        //SERVER RELATED CALLS
         socket.on('all users', function(){
             console.log('User requested all users details');
             io.emit('all users', getUsersOnline());
         });
 
-        socket.on('connectUser', function(){
-            console.log('User requested to connect');
-        });
 
         socket.on('disconnect', function(){
             console.log('user disconnected');
@@ -57,42 +62,38 @@ var GameServer = function (app, io) {
         });
 
         //USER CONNECTING TO ANOTHER USER
-        socket.on('user connect request', function(msg){
+        socket.on('connectUser', function(msg){
             console.log('User '+ msg.userId1 +' requested to connect to '+ msg.userId2);
-            //send receiver call
-            for (var key in users) {
-                if(users[key].userId==msg.userId2){
-                    console.log("sent request to receiver");
-                    users[key].socket.emit('user request', {userId1 :msg.userId1 });
-                }
-            }
+
+            //ask opponent
+            console.log("sent connection request to receiver");
+            console.log("SERVERUSERS="+printUsers());
+            users[msg.userId2].socket.emit('user connect request', {userId1 :msg.userId1 , userId2 : msg.userId2});
+
         });
         socket.on('user request reply', function(msg){
             console.log('User replied '+ msg.ok +'for  request to connect from '+ msg.userId1);
-            if(msg.ok){//if confirmed add meta data
-                //send caller call
-                for (var key in users) {
-                    if(users[key].userId==msg.userId1){
-                        socket.opponent  =users[key].socket;
-                        users[key].socket.opponent = socket;
-                        //send caller call
-                        users[key].socket.emit('user request reply', msg);
+            if(msg.ok){
 
-                    }
-                }
+                //adding connections
+                users[msg.userId2].opponent  =users[msg.userId1].userId;
+                users[msg.userId1].opponent  =users[msg.userId2].userId;
+
+                //send caller call
+                users[msg.userId1].socket.emit('user request reply', msg);
             }
             else{
-
+                console.log("opponent user is busy"+msg.userId2);
             }
-
         });
 
         //USER DISCONNECTING TO ANOTHER USER
         socket.on('user disconnect', function(msg){
-            users[msg.user1].opponent = null;
-            users[msg.user2].opponent = null;
-            users[msg.user1].socket.emit('user disconnect',null);
-            users[msg.user2].socket.emit('user disconnect',null);
+            var opponentId = users[msg.userId1].opponent;
+            users[msg.userId1].opponent = null;
+            users[opponentId].opponent = null;
+            users[msg.userId1].socket.emit('user disconnect',null);
+            users[opponentId].socket.emit('user disconnect',null);
         });
 
         //CONNECTED USER COMMANDS
