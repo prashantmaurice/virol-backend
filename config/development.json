@@ -1,6 +1,6 @@
 {
     "remindmeServer" : {
-        "port" : "9000"
+        "port" : "7444"
     },
     "dbConfig" : {
         "username" : "root",
